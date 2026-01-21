@@ -70,13 +70,13 @@
 
       <div class="gift">
         <span>Honeymoon Fund 🌙</span>
-        <a href="#" onclick="claimGift('honeyfund', this)">Select</a>
+        <a href="#" data-gift-id="honeyfund" onclick="claimGift('honeyfund', this)">Select</a>
 
       </div>
 
       <div class="gift">
         <span>Wedding Photographer 📷</span>
-        <a href="#" onclick="claimGift('photographer', this)">Select</a>
+        <a href="#" data-gift-id="photographer" onclick="claimGift('photographer', this)">Select</a>
 
       </div>
     </div>
@@ -86,12 +86,12 @@
 
       <div class="gift">
         <span>Air Fryer</span>
-        <a href="#" onclick="claimGift('airfryer', this)">Select</a>
+        <a href="#" data-gift-id="airfryer" onclick="claimGift('airfryer', this)">Select</a>
       </div>
 
       <div class="gift">
-        <span>Hand Blender</span>
-        <a href="#" onclick="claimGift('handblender', this)">Select</a>
+        <span>Licuadora de mano</span>
+        <a href="#" data-gift-id="handblender" onclick="claimGift('handblender', this)">Select</a>
       </div>
     </div>
 
@@ -103,9 +103,61 @@
 
 </body>
   <script type="module">
-  // Import Firebase
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAOFz8P6Qp1kD1K_UgtR6p_ld2QySU7oAw",
+    authDomain: "wedding-gift-list-d6ca1.firebaseapp.com",
+    projectId: "wedding-gift-list-d6ca1",
+    storageBucket: "wedding-gift-list-d6ca1.firebasestorage.app",
+    messagingSenderId: "389852637419",
+    appId: "1:389852637419:web:964120380a22406489f6ae"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function claimGift(id, button) {
+    const ref = doc(db, "gifts", id);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      alert("This gift has already been selected 💍");
+      return;
+    }
+
+    await setDoc(ref, { claimed: true });
+
+    button.innerText = "Already gifted 💍";
+    button.style.background = "#aaa";
+    button.style.pointerEvents = "none";
+  }
+
+  async function checkGiftStatus() {
+    const buttons = document.querySelectorAll("[data-gift-id]");
+
+    for (const button of buttons) {
+      const id = button.dataset.giftId;
+      const ref = doc(db, "gifts", id);
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        button.innerText = "Already gifted 💍";
+        button.style.background = "#aaa";
+        button.style.pointerEvents = "none";
+      }
+    }
+  }
+
+  window.claimGift = claimGift;
+  window.onload = checkGiftStatus;
+</script>
 
   // 🔴 PASTE YOUR FIREBASE CONFIG HERE
   const firebaseConfig = {
