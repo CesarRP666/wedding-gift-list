@@ -60,9 +60,9 @@
 <body>
 
   <div class="container">
-    <h1>Thank You for Celebrating With Us</h1>
+    <h1>Nos alegra su presencia</h1>
     <p class="subtitle">
-      Your presence is the greatest gift. If you wish to contribute, here are some options we would truly appreciate.
+      Si deseas acompañarnos con un regalo, aquí encontrarás algunas ideas.
     </p>
 
     <div class="section">
@@ -70,12 +70,14 @@
 
       <div class="gift">
         <span>Honeymoon Fund 🌙</span>
-        <a href="#">Contribute</a>
+        <a href="#" onclick="claimGift('honeyfund', this)">Select</a>
+
       </div>
 
       <div class="gift">
         <span>Wedding Photographer 📷</span>
-        <a href="#">Contribute</a>
+        <a href="#" onclick="claimGift('photographer', this)">Select</a>
+
       </div>
     </div>
 
@@ -84,20 +86,56 @@
 
       <div class="gift">
         <span>Air Fryer</span>
-        <a href="#">View</a>
+        <a href="#" onclick="claimGift('airfryer', this)">Select</a>
       </div>
 
       <div class="gift">
         <span>Hand Blender</span>
-        <a href="#">View</a>
+        <a href="#" onclick="claimGift('handblender', this)">Select</a>
       </div>
     </div>
 
     <footer>
-      With love, <br>
-      [Your Names]
+      Agradecemos su compañía, <br>
+      Cesar y Alejandra
     </footer>
   </div>
 
 </body>
+  <script type="module">
+  // Import Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // 🔴 PASTE YOUR FIREBASE CONFIG HERE
+  const firebaseConfig = {
+    apiKey: "AIzaSyAOFz8P6Qp1kD1K_UgtR6p_ld2QySU7oAw",
+    authDomain: "wedding-gift-list-d6ca1.firebaseapp.com",
+    projectId: "wedding-gift-list-d6ca1",
+    storageBucket: "wedding-gift-list-d6ca1.firebasestorage.app",
+    messagingSenderId: "389852637419",
+    appId: "1:389852637419:web:964120380a22406489f6ae"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function claimGift(id, button) {
+    const ref = doc(db, "gifts", id);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      alert("This gift has already been selected 💍");
+      return;
+    }
+
+    await setDoc(ref, { claimed: true });
+    button.innerText = "Already gifted 💍";
+    button.style.background = "#aaa";
+    button.style.pointerEvents = "none";
+  }
+
+  window.claimGift = claimGift;
+</script>
+
 </html>
