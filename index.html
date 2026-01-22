@@ -247,6 +247,20 @@ p.subtitle {
   color: var(--accent);
 }
 
+.admin-trigger {
+  display: block;
+  margin-top: 40px;
+  text-align: center;
+  font-size: 10px;
+  color: transparent;
+  cursor: pointer;
+}
+
+.admin-trigger:hover {
+  color: #8A5A55; /* your accent */
+}
+
+    
 /* Shared modal typography */
 .modal-title {
   font-family: 'Playfair Display', serif;
@@ -671,13 +685,10 @@ html {
 
 
   
-  <div style="text-align:center; margin-top:40px;">
-  <a href="javascript:void(0)"
-     onclick="adminReset()"
-     style="font-size:12px; color:#aaa; text-decoration:none;">
-     Admin
-  </a>
-</div>
+<span class="admin-trigger" onclick="adminReset()">
+  .
+</span>
+
 
   
 
