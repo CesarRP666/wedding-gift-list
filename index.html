@@ -562,14 +562,10 @@ async function confirmGift() {
 
   await setDoc(ref, { claimed: true });
 
-  pendingButton.innerText = "Regalo separado 💍";
-  pendingButton.style.background = "#aaa";
-  pendingButton.style.pointerEvents = "none";
-
   applyReservedStyle(pendingButton);
   closeModal();
-
 }
+
 
 function applyReservedStyle(button) {
   button.innerHTML = 'Regalo separado <span class="check">✓</span>';
@@ -579,20 +575,19 @@ function applyReservedStyle(button) {
 
     
   async function checkGiftStatus() {
-    const buttons = document.querySelectorAll("[data-gift-id]");
+  const buttons = document.querySelectorAll("[data-gift-id]");
 
-    for (const button of buttons) {
-      const id = button.dataset.giftId;
-      const ref = doc(db, "gifts", id);
-      const snap = await getDoc(ref);
+  for (const button of buttons) {
+    const id = button.dataset.giftId;
+    const ref = doc(db, "gifts", id);
+    const snap = await getDoc(ref);
 
-      if (snap.exists()) {
-        applyReservedStyle(button);
-      }
-
-      }
+    if (snap.exists()) {
+      applyReservedStyle(button);
     }
   }
+}
+
 
 
   async function adminReset() {
