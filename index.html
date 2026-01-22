@@ -140,16 +140,16 @@ p.subtitle {
 
 .gift-selected {
   background: transparent !important;
-  color: #9b9b9b;
+  color: #8A5A55; /* invitation wine */
   font-weight: 400;
-  text-decoration: none;
   cursor: default;
 }
-   
-.gift-selected::after {
-  content: " ✓";
+
+.gift-selected .check {
   color: #9AA68E; /* sage */
+  margin-left: 6px;
 }
+
 
 .confirm-text {
   font-size: 14px;
@@ -566,9 +566,18 @@ async function confirmGift() {
   pendingButton.style.background = "#aaa";
   pendingButton.style.pointerEvents = "none";
 
+  applyReservedStyle(pendingButton);
   closeModal();
+
 }
 
+function applyReservedStyle(button) {
+  button.innerHTML = 'Regalo separado <span class="check">✓</span>';
+  button.classList.add("gift-selected");
+  button.style.pointerEvents = "none";
+}
+
+    
   async function checkGiftStatus() {
     const buttons = document.querySelectorAll("[data-gift-id]");
 
@@ -578,9 +587,9 @@ async function confirmGift() {
       const snap = await getDoc(ref);
 
       if (snap.exists()) {
-        button.innerText = "Regalo separado 💍";
-        button.classList.add("gift-selected");
-        button.style.pointerEvents = "none";
+        applyReservedStyle(button);
+      }
+
       }
     }
   }
@@ -609,8 +618,7 @@ async function confirmGift() {
 
   alert("All gifts have been reset ✅");
   location.reload();
-}
-
+} 
     
 function copyText(elementId, el) {
   const text = document.getElementById(elementId).innerText.replace(/\s/g, "");
