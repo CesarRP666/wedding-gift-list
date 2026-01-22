@@ -138,6 +138,18 @@ p.subtitle {
   text-decoration: underline;
 }
 
+.gift-selected {
+  background: transparent !important;
+  color: #9b9b9b;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: default;
+}
+   
+.gift-selected::after {
+  content: " ✓";
+  color: #9AA68E; /* sage */
+}
 
 
 
@@ -559,10 +571,9 @@ async function confirmGift() {
       const snap = await getDoc(ref);
 
       if (snap.exists()) {
-        button.innerText = "Already gifted 💍";
-        button.style.background = "#aaa";
+        button.innerText = "Regalo separado";
+        button.classList.add("gift-selected");
         button.style.pointerEvents = "none";
-
       }
     }
   }
