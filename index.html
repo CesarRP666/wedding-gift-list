@@ -834,7 +834,11 @@ function copyText(elementId, el) {
 }
 
 
-    
+document.addEventListener("keydown", (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === "A") {
+    adminReset();
+  }
+});    
     
 
   window.openModal = openModal;
