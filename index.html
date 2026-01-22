@@ -59,7 +59,7 @@
 /* styles */    
 body {
   font-family: 'Inter', sans-serif;
-  color: var(--bg-main);
+  color: var(--text-main);
   margin: 0;
   padding: 0;
 
@@ -67,9 +67,8 @@ body {
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
-
-  animation: subtleBackground 40s ease-in-out infinite;
 }
+
 
   h1, h2 {
     font-family: 'Playfair Display', serif;
@@ -250,9 +249,9 @@ p.subtitle {
 }
 
 @media (prefers-color-scheme: dark) {
-  body {
-    background-color: var(--bg-main);
-    color: var(--text-main);
+  html, body {
+    background-color: var(--bg-main) !important;
+    color: var(--text-main) !important;
   }
 }
    
