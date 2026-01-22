@@ -131,6 +131,7 @@
   align-items:center;
   z-index:999;
 ">
+  
   <div style="
     background:#fff;
     padding:30px;
@@ -166,6 +167,8 @@
   </div>
 </div>
 
+
+
   
 <div id="fundModal" style="
   display:none;
@@ -178,7 +181,24 @@
   justify-content:center;
   align-items:center;
   z-index:999;
+button {
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background: #f5f5f5;
+}
+
+button:hover {
+  background: #eaeaea;
+}
+
 ">
+
+
+  
+  
   <div style="
     background:#fff;
     padding:30px;
@@ -194,24 +214,26 @@
       you can use any of the following options:
     </p>
 
-    <p style="font-size:18px; margin-bottom:10px;">
-      <strong>Número de Cuenta BCP</strong><br>
-      19391538683013
-    </p>
+<div style="margin-bottom:18px;">
+   <strong>Número de Cuenta BCP</strong><br>
+   <span id="bcp">19391538683013</span>
+   <button onclick="copyText('bcp', this)" style="margin-left:8px;">📋 Copy</button>
+</div>
 
-    <p style="margin-bottom:20px;">
-      <strong>CCI</strong><br>
-      00219319153868301315
-    </p>
+<div style="margin-bottom:18px;">
+   <strong>CCI</strong><br>
+   <span id="cci">00219319153868301315</span>
+   <button onclick="copyText('cci', this)" style="margin-left:8px;">📋 Copy</button>
+</div>
 
-    <p style="font-size:18px; margin-bottom:5px;">
-      <strong>Yape</strong><br>
-      985 368 765
-    </p>
+<div style="margin-bottom:18px;">
+  <strong>Yape</strong><br>
+  <span id="yape">985368765</span><br>
+  Cesar Requejo
+  <br>
+  <button onclick="copyText('yape', this)" style="margin-top:6px;">📋 Copy Yape</button>
+</div>
 
-    <p style="margin-bottom:25px;">
-      Cesar Requejo
-    </p>
 
     <button onclick="closeFundModal()" style="
       background:#000;
@@ -239,6 +261,7 @@
   
 
 </body>
+  
   <script type="module">
     
 function openFundModal() {
@@ -350,6 +373,22 @@ async function confirmGift() {
   location.reload();
 }
 
+    
+function copyText(elementId, button) {
+  const text = document.getElementById(elementId).innerText;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const original = button.innerText;
+    button.innerText = "Copied ✓";
+
+    setTimeout(() => {
+      button.innerText = original;
+    }, 1500);
+  });
+}
+
+    
+    
 
   window.openModal = openModal;
   window.closeModal = closeModal;
@@ -358,7 +397,7 @@ async function confirmGift() {
   window.adminReset = adminReset;
   window.openFundModal = openFundModal;
   window.closeFundModal = closeFundModal;
-
+  window.copyText = copyText;
 
 </script>
 
