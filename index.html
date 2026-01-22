@@ -70,18 +70,18 @@
 
       <div class="gift">
         <span>Honeymoon Fund 🌙</span>
-        <a href="javascript:void(0)" data-gift-id="honeyfund"
-        onclick="openModal('honeyfund', this)">
-        Select
+        <a href="javascript:void(0)"
+           onclick="openFundModal()">
+           Contribute
         </a>
       </div>
 
       <div class="gift">
         <span>Wedding Photographer 📷</span>
-        <a href="javascript:void(0)" data-gift-id="photo"
-        onclick="openModal('photo', this)">
-        Select
-        </a>
+        <a href="javascript:void(0)"
+           onclick="openFundModal()">
+           Contribute
+        </a>      
       </div>
     </div>
 
@@ -165,8 +165,69 @@
     </div>
   </div>
 </div>
-  
 
+  
+<div id="fundModal" style="
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+">
+  <div style="
+    background:#fff;
+    padding:30px;
+    max-width:420px;
+    width:90%;
+    border-radius:12px;
+    text-align:center;
+  ">
+    <h2 style="margin-top:0;">Contribution details</h2>
+
+    <p style="margin-bottom:20px;">
+      If you’d like to support us through a contribution,  
+      you can use any of the following options:
+    </p>
+
+    <p style="font-size:18px; margin-bottom:10px;">
+      <strong>Número de Cuenta BCP</strong><br>
+      19391538683013
+    </p>
+
+    <p style="margin-bottom:20px;">
+      <strong>CCI</strong><br>
+      00219319153868301315
+    </p>
+
+    <p style="font-size:18px; margin-bottom:5px;">
+      <strong>Yape</strong><br>
+      985 368 765
+    </p>
+
+    <p style="margin-bottom:25px;">
+      Cesar Requejo
+    </p>
+
+    <button onclick="closeFundModal()" style="
+      background:#000;
+      color:#fff;
+      border:none;
+      padding:12px 18px;
+      border-radius:6px;
+      cursor:pointer;
+    ">
+      Thank you so much for your contribution 💛
+    </button>
+  </div>
+</div>
+
+
+  
   <div style="text-align:center; margin-top:40px;">
   <a href="javascript:void(0)"
      onclick="adminReset()"
@@ -175,9 +236,19 @@
   </a>
 </div>
 
+  
 
 </body>
   <script type="module">
+    
+function openFundModal() {
+  document.getElementById("fundModal").style.display = "flex";
+}
+
+function closeFundModal() {
+  document.getElementById("fundModal").style.display = "none";
+}
+
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
   getFirestore,
@@ -285,6 +356,9 @@ async function confirmGift() {
   window.confirmGift = confirmGift;
   window.onload = checkGiftStatus;
   window.adminReset = adminReset;
+  window.openFundModal = openFundModal;
+  window.closeFundModal = closeFundModal;
+
 
 </script>
 
