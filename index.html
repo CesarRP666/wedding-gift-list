@@ -949,7 +949,7 @@ function refreshAdminNotes() {
     
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "N" && e.shiftKey && e.key === "M") {
+  if (e.ctrlKey && e.shiftKey && e.key === "0") {
     isAdmin = !isAdmin;
     alert(
       isAdmin
