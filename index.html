@@ -337,7 +337,15 @@ footer {
 
 .admin-trigger:hover {
   color: #8A5A55; /* your accent */
-}    
+}
+    
+.admin-note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6b625e;
+  line-height: 1.4;
+}
+
     
 @media (prefers-color-scheme: dark) {
   html, body {
@@ -852,6 +860,49 @@ function copyText(elementId, el) {
   });
 }
 
+let isAdmin = false;
+
+function refreshAdminNotes() {
+  document.querySelectorAll(".admin-note").forEach(n => n.remove());
+
+  if (!isAdmin) return;
+
+  document.querySelectorAll("[data-gift-id]").forEach(async (button) => {
+    const id = button.dataset.giftId;
+    const ref = doc(db, "gifts", id);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.from || data.message) {
+        const note = document.createElement("div");
+        note.className = "admin-note";
+        note.innerHTML = `
+          <strong>De:</strong> ${data.from || "—"}<br>
+          <strong>Mensaje:</strong> ${data.message || "—"}
+        `;
+        button.closest(".gift").appendChild(note);
+      }
+    }
+  });
+}
+
+    
+
+document.addEventListener("keydown", (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === "M") {
+    isAdmin = !isAdmin;
+    alert(
+      isAdmin
+        ? "Modo administrador activado"
+        : "Modo administrador desactivado"
+    );
+    refreshAdminNotes();
+  }
+});
+
+    
+    
 
 document.addEventListener("keydown", (e) => {
   if (e.ctrlKey && e.shiftKey && e.key === "A") {
