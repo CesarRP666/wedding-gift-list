@@ -346,6 +346,29 @@ footer {
   line-height: 1.4;
 }
 
+.guest-note {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guest-note input,
+.guest-note textarea {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  resize: none;
+}
+
+.guest-note input::placeholder,
+.guest-note textarea::placeholder {
+  color: #aaa;
+}
+    
     
 @media (prefers-color-scheme: dark) {
   html, body {
@@ -643,6 +666,20 @@ html {
   Gracias por acompañarnos en este momento tan especial.
 </p>
 
+<div class="guest-note">
+  <input
+    type="text"
+    id="fromName"
+    placeholder="De (opcional)"
+  >
+
+  <textarea
+    id="guestMessage"
+    rows="3"
+    placeholder="Mensaje (opcional)"
+  ></textarea>
+</div>
+  
     
     <div style="margin-top:25px;">
       
@@ -713,6 +750,20 @@ html {
   <span class="copy-action" onclick="copyText('yape', this)">Copiar número</span>
 </div>
 
+<div class="guest-note">
+  <input
+    type="text"
+    id="fromName"
+    placeholder="De (opcional)"
+  >
+
+  <textarea
+    id="guestMessage"
+    rows="3"
+    placeholder="Mensaje (opcional)"
+  ></textarea>
+</div>
+  
 <button class="primary-action" onclick="closeFundModal()">
   Muchas gracias por apoyarnos 🖤
 </button>
@@ -791,10 +842,18 @@ async function confirmGift() {
     return;
   }
 
-  await setDoc(ref, { claimed: true });
+ await setDoc(ref, {
+  claimed: true,
+  from: document.getElementById("fromName")?.value || "",
+  message: document.getElementById("guestMessage")?.value || "",
+  timestamp: Date.now()
+});
 
   applyReservedStyle(pendingButton);
   closeModal();
+  document.getElementById("fromName").value = "";
+document.getElementById("guestMessage").value = "";
+
 }
 
 
