@@ -760,7 +760,8 @@ html {
   <textarea
     id="guestMessage"
     rows="3"
-    placeholder="Mensaje (opcional)"
+    maxlength="1500"
+    placeholder="Mensaje (opcional, máximo 1500 caracteres)"
   ></textarea>
 </div>
   
@@ -784,6 +785,9 @@ html {
 </body>
   
   <script type="module">
+    
+const ADMIN_PASSWORD = "michiboda2026";
+let isAdmin = false;
     
 function openFundModal() {
   document.getElementById("fundModal").style.display = "flex";
@@ -841,14 +845,22 @@ async function confirmGift() {
     closeModal();
     return;
   }
+const messageEl = document.getElementById("guestMessage");
+const message = messageEl?.value || "";
 
- await setDoc(ref, {
+if (message.length > 1500) {
+  alert("El mensaje no puede tener más de 1500 caracteres.");
+  return;
+}
+
+  await setDoc(ref, {
   claimed: true,
   from: document.getElementById("fromName")?.value || "",
   message: document.getElementById("guestMessage")?.value || "",
   timestamp: Date.now()
 });
 
+  
   applyReservedStyle(pendingButton);
   closeModal();
   document.getElementById("fromName").value = "";
@@ -949,16 +961,30 @@ function refreshAdminNotes() {
     
 
 document.addEventListener("keydown", (e) => {
+  if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+
   if (e.ctrlKey && e.shiftKey && e.key === "F") {
+    const input = prompt("Contraseña de administrador:");
+
+    if (input === null) return; // user cancelled
+
+    if (input !== ADMIN_PASSWORD) {
+      alert("Contraseña incorrecta");
+      return;
+    }
+
     isAdmin = !isAdmin;
+
     alert(
       isAdmin
         ? "Modo administrador activado"
         : "Modo administrador desactivado"
     );
+
     refreshAdminNotes();
   }
 });
+
 
     
     
