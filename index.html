@@ -666,19 +666,22 @@ html {
   Gracias por acompañarnos en este momento tan especial.
 </p>
 
+
 <div class="guest-note">
   <input
     type="text"
-    id="fromName"
+    id="fundFromName"
     placeholder="De (opcional)"
   >
 
   <textarea
-    id="guestMessage"
+    id="fundGuestMessage"
     rows="3"
-    placeholder="Mensaje (opcional)"
+    maxlength="1500"
+    placeholder="Mensaje (opcional, máximo 1500 caracteres)"
   ></textarea>
 </div>
+  
   
     
     <div style="margin-top:25px;">
@@ -850,8 +853,8 @@ if (message.length > 1500) {
 
   await setDoc(ref, {
   claimed: true,
-  from: document.getElementById("fromName")?.value || "",
-  message: document.getElementById("guestMessage")?.value || "",
+  from: document.getElementById("fundFromName")?.value || "",
+  message: document.getElementById("fundGuestMessage")?.value || "",
   timestamp: Date.now()
 });
 
