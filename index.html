@@ -765,9 +765,10 @@ html {
   ></textarea>
 </div>
   
-<button class="primary-action" onclick="closeFundModal()">
-  Muchas gracias por apoyarnos 🖤
+<button class="primary-action" onclick="confirmFund()">
+  Muchas gracias por apoyarnos 🐱
 </button>
+
     
 
   </div>
@@ -789,23 +790,17 @@ html {
 const ADMIN_PASSWORD = "michiboda2026";
 let isAdmin = false;
     
-function openFundModal() {
-  document.getElementById("fundModal").style.display = "flex";
-}
-
-function closeFundModal() {
-  document.getElementById("fundModal").style.display = "none";
-}
-
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
+import {
   getFirestore,
   doc,
   setDoc,
   getDoc,
   deleteDoc,
   getDocs,
-  collection
+  collection,
+  updateDoc,
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -869,6 +864,62 @@ document.getElementById("guestMessage").value = "";
 }
 
 
+    
+async function confirmFund() {
+  const from = document.getElementById("fromName")?.value || "";
+  const message = document.getElementById("guestMessage")?.value || "";
+
+  if (message.length > 1500) {
+    alert("El mensaje no puede tener más de 1500 caracteres.");
+    return;
+  }
+
+  const ref = doc(db, "funds", pendingFundId);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    // create fund document the first time
+    await setDoc(ref, {
+      contributions: []
+    });
+  }
+
+  await updateDoc(ref, {
+    contributions: arrayUnion({
+      from,
+      message,
+      timestamp: Date.now()
+    })
+  });
+
+  // clear inputs
+  document.getElementById("fromName").value = "";
+  document.getElementById("guestMessage").value = "";
+
+  closeFundModal();
+}
+
+async function readFundMessages(fundId) {
+  if (!isAdmin) return;
+
+  const ref = doc(db, "funds", fundId);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    console.log("No contributions yet");
+    return;
+  }
+
+  const contributions = snap.data().contributions || [];
+
+  contributions.forEach(c => {
+    console.log("De:", c.from || "—");
+    console.log("Mensaje:", c.message || "—");
+    console.log("------");
+  });
+}
+
+    
 function applyReservedStyle(button) {
   button.innerHTML = 'Regalo separado <span class="check">✓</span>';
   button.classList.add("gift-selected");
