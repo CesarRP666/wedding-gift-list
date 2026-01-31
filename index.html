@@ -853,12 +853,13 @@ if (message.length > 1500) {
   return;
 }
 
-  await setDoc(ref, {
+await setDoc(ref, {
   claimed: true,
-  from: document.getElementById("fundFromName")?.value || "",
-  message: document.getElementById("fundGuestMessage")?.value || "",
+  from: document.getElementById("fromName")?.value || "",
+  message: document.getElementById("guestMessage")?.value || "",
   timestamp: Date.now()
 });
+
 
   
   applyReservedStyle(pendingButton);
