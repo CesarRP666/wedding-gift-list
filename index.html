@@ -879,8 +879,8 @@ function closeFundModal() {
     
     
 async function confirmFund() {
-  const from = document.getElementById("fromName")?.value || "";
-  const message = document.getElementById("guestMessage")?.value || "";
+  const from = document.getElementById("fundFromName")?.value || "";
+  const message = document.getElementById("fundGuestMessage")?.value || "";
 
   if (message.length > 1500) {
     alert("El mensaje no puede tener más de 1500 caracteres.");
