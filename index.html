@@ -19,7 +19,7 @@
 
   --text-main: #8A5A55;     /* body text */
   --bg-main: #FAF8F5;       /* background */
-  --sec-text: #3F3A36
+  --sec-text: #3F3A36;
 }
 
 :root {
@@ -931,7 +931,7 @@ function copyText(elementId, el) {
   });
 }
 
-let isAdmin = false;
+
 
 function refreshAdminNotes() {
   document.querySelectorAll(".admin-note").forEach(n => n.remove());
@@ -963,7 +963,8 @@ function refreshAdminNotes() {
 document.addEventListener("keydown", (e) => {
   if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
 
-  if (e.ctrlKey && e.shiftKey && e.key === "F") {
+  if (e.ctrlKey && e.shiftKey && e.code === "KeyF") {
+
     const input = prompt("Contraseña de administrador:");
 
     if (input === null) return; // user cancelled
