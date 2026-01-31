@@ -589,7 +589,7 @@ html {
       <div class="gift">
         <span>Fondo para nuestra Luna de miel 🌙</span>
         <a href="javascript:void(0)"
-           onclick="openFundModal()">
+           onclick="openFundModal('honeymoon')">
            Contribuir
         </a>
       </div>
@@ -597,7 +597,7 @@ html {
 <div class="gift">
     <span>Fondo para nuestros Estudios Futuros 📖</span>
     <a href="javascript:void(0)"
-        onclick="openFundModal()">
+        onclick="openFundModal('studies')">
         Contribuir
     </a>
   </div>
@@ -605,7 +605,7 @@ html {
 <div class="gift">
     <span>Fondo para Hora Loca y Bebidas 🥳</span>
     <a href="javascript:void(0)"
-        onclick="openFundModal()">
+        onclick="openFundModal('crazy')">
         Contribuir
     </a>
       </div>      
@@ -613,7 +613,7 @@ html {
 <div class="gift">
     <span>Fondo para nuestro Hogar y Proyectos 🏠 </span>
     <a href="javascript:void(0)"
-        onclick="openFundModal()">
+        onclick="openFundModal('home')">
         Contribuir
     </a>      
   </div>
@@ -864,6 +864,19 @@ document.getElementById("guestMessage").value = "";
 }
 
 
+let pendingFundId = null;
+
+function openFundModal(fundId = "default") {
+  pendingFundId = fundId;
+  document.getElementById("fundModal").style.display = "flex";
+}
+
+function closeFundModal() {
+  document.getElementById("fundModal").style.display = "none";
+  pendingFundId = null;
+}
+
+    
     
 async function confirmFund() {
   const from = document.getElementById("fromName")?.value || "";
