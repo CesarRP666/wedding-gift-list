@@ -93,7 +93,7 @@ body {
 .container {
   max-width: 700px;
   margin: auto;
-  padding: 48px 24px 24px;
+  padding: 48px 24px 32px; /* slightly more bottom control */
 
   position: relative;
   background: rgba(250, 248, 245, 0.92);
@@ -101,39 +101,48 @@ body {
   box-shadow: 0 20px 60px rgba(0,0,0,0.04);
 }
 
+/* Main title */
 h1 {
   text-align: center;
-  margin-bottom: 10px;
+  margin: 0 0 14px; /* remove default top margin, reduce bottom */
   letter-spacing: 0.3px;
-    }
-/* Section titles icons / accents */
+}
+
+/* Section titles */
 h2 {
   color: #2F2F2F;
-  margin-bottom: 18px;
+  margin: 0 0 18px;
   letter-spacing: 0.2px;
   opacity: 0.95;
 }
-    
+
 h2 span,
 h2 .icon {
   color: var(--accent-soft);
-}    
+}
+
+/* Subtitle paragraphs */
 p.subtitle {
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.6;          /* slightly tighter */
   color: #666;
   max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center
+  margin: 6px auto;          /* KEY FIX: reduce vertical stacking */
+  text-align: center;
 }
 
+/* Last subtitle shouldn't push content down */
+p.subtitle:last-of-type {
+  margin-bottom: 0;
+}
 
+/* Content sections */
 .section {
-      margin-top: 56px;
-      margin-bottom: 40px;
-      color: var(--text-main);
+  margin-top: 48px;          /* reduced from 56 */
+  margin-bottom: 32px;       /* reduced from 40 */
+  color: var(--text-main);
 }
+
     
 .gift {
   background: #fff;
@@ -539,7 +548,9 @@ html {
 
   
   <div class="container">
-    <h1>Si deseas acompañarnos con un presente, aquí encontrarás algunas ideas.</h1>
+    <h1>
+      Si deseas acompañarnos con un presente, aquí encontrarás algunas ideas.
+    </h1>
     <p class="subtitle">
       Como ya compartimos nuestro hogar y contamos con lo esencial, hemos reunido aquí algunas formas de apoyarnos.
       </p>
