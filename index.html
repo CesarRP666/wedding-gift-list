@@ -490,6 +490,29 @@ footer {
   font-size: 14px;
 }
 
+
+/* Loading state for buttons */
+.button-loading {
+  pointer-events: none;
+  opacity: 0.6;
+  position: relative;
+}
+
+.button-loading::after {
+  content: "Procesando…";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 13px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: inherit;
+}
+
+
     
     
 @media (prefers-color-scheme: dark) {
@@ -816,7 +839,7 @@ html {
     
     <div style="margin-top:25px;">
       
-    <button id="confirmBtn" class="primary-action" onclick="confirmGift()">
+    <button id="confirmBtn" class="primary-action" onclick="confirmGift(this)">
       Confirmar regalo
     </button>
 
@@ -899,7 +922,7 @@ html {
 </div>
 
   
-<button class="primary-action" onclick="confirmFund()">
+<button class="primary-action" onclick="confirmFund(this)">
   Muchas gracias por apoyarnos 🐱
 </button>
 
@@ -946,7 +969,7 @@ html {
       Borrar mensajes
     </label>
 
-    <button class="primary-action" onclick="confirmAdminReset()">
+    <button class="primary-action" onclick="confirmAdminReset(this)">
       Confirmar reinicio
     </button>
   </div>
@@ -1033,7 +1056,8 @@ function closeModal() {
   pendingButton = null;
 }
 
-async function confirmGift() {
+async function confirmGift(button) {
+  button.classList.add("button-loading");
   const ref = doc(db, "gifts", pendingGiftId);
   const snap = await getDoc(ref);
 
@@ -1048,6 +1072,7 @@ const message = messageEl?.value || "";
 if (message.length > 1500) {
   alert("El mensaje no puede tener más de 1500 caracteres.");
   return;
+  button.classList.remove("button-loading");
 }
 
 await setDoc(ref, {
@@ -1081,41 +1106,58 @@ function closeFundModal() {
 
     
     
-async function confirmFund() {
-  const from = document.getElementById("fundFromName")?.value || "";
-  const message = document.getElementById("fundGuestMessage")?.value || "";
+async function confirmFund(button) {
+  // start loading immediately
+  button.classList.add("button-loading");
 
-  if (message.length > 1500) {
-    alert("El mensaje no puede tener más de 1500 caracteres.");
-    return;
-  }
+  try {
+    const from = document.getElementById("fundFromName")?.value || "";
+    const message = document.getElementById("fundGuestMessage")?.value || "";
 
-  const ref = doc(db, "funds", pendingFundId);
-  const snap = await getDoc(ref);
+    if (message.length > 1500) {
+      alert("El mensaje no puede tener más de 1500 caracteres.");
+      return; // finally WILL still run
+    }
 
-  if (!snap.exists()) {
-    // create fund document the first time
-    await setDoc(ref, {
-      contributions: []
+    if (!pendingFundId) {
+      alert("Error interno: fondo no identificado.");
+      return;
+    }
+
+    const ref = doc(db, "funds", pendingFundId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      // create fund document the first time
+      await setDoc(ref, {
+        contributions: []
+      });
+    }
+
+    await updateDoc(ref, {
+      contributions: arrayUnion({
+        from,
+        message,
+        timestamp: Date.now()
+      })
     });
+
+    // clear inputs
+    document.getElementById("fundFromName").value = "";
+    document.getElementById("fundGuestMessage").value = "";
+
+    // close modal on success
+    closeFundModal();
+
+  } catch (err) {
+    console.error("Error saving fund contribution:", err);
+    alert("Ocurrió un error. Inténtalo nuevamente.");
+  } finally {
+    // ALWAYS remove loading state
+    button.classList.remove("button-loading");
   }
-
-  await updateDoc(ref, {
-    contributions: arrayUnion({
-      from,
-      message,
-      timestamp: Date.now()
-    })
-  });
-
-  // clear inputs
-// clear inputs
-  document.getElementById("fundFromName").value = "";
-  document.getElementById("fundGuestMessage").value = "";
-
-
-  closeFundModal();
 }
+
 
 async function readFundMessages(fundId) {
   if (!isAdmin) return;
@@ -1355,6 +1397,7 @@ function closeAdminReset() {
 
     
 async function confirmAdminReset() {
+  button.classList.add("button-loading");
   const resetGifts = document.getElementById("resetGifts").checked;
   const resetMessages = document.getElementById("resetMessages").checked;
 
@@ -1394,6 +1437,7 @@ async function confirmAdminReset() {
   // Refresh admin panels
   refreshAdminGiftNotes();
   refreshAdminFundNotes();
+  button.classList.remove("button-loading");
 }
     
     
