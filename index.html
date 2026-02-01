@@ -327,13 +327,13 @@ footer {
 }
     
 .admin-trigger {
-  display: block;
-  margin-top: -200px;
+  display: none; /* hidden by default */
   text-align: center;
   font-size: 10px;
   color: transparent;
   cursor: pointer;
 }
+
 
 .admin-trigger:hover {
   color: #8A5A55; /* your accent */
@@ -1299,6 +1299,13 @@ document.addEventListener("keydown", (e) => {
 
     refreshAdminFundNotes();
     refreshAdminGiftNotes();
+
+
+    const trigger = document.querySelector(".admin-trigger");
+
+if (trigger) {
+  trigger.style.display = isAdmin ? "block" : "none";
+}
 
     if (!isAdmin) {
       document.getElementById("adminPanel").style.display = "none";
