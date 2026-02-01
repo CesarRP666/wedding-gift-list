@@ -1084,6 +1084,7 @@ function closeModal() {
   pendingButton = null;
 }
 
+    
 
 async function confirmGift(button) {
   const originalText = button.innerHTML;
@@ -1115,10 +1116,18 @@ async function confirmGift(button) {
       timestamp: Date.now()
     });
 
+    // 🔹 clear inputs
     document.getElementById("fromName").value = "";
     document.getElementById("guestMessage").value = "";
 
+    // 🔹 close modal
     closeModal();
+
+    // 🔹 OPTIONAL MICRO-DELAY (smooth UX)
+    await new Promise(r => setTimeout(r, 300));
+
+    // 🔹 RE-SYNC gift states from Firestore
+    await checkGiftStatus();
 
   } catch (err) {
     console.error("Error confirming gift:", err);
@@ -1129,6 +1138,8 @@ async function confirmGift(button) {
     button.innerHTML = originalText;
   }
 }
+
+
 
 
 
