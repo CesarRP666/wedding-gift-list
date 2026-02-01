@@ -1063,14 +1063,27 @@ const GIFT_LABELS = {
 function openModal(id, button) {
   pendingGiftId = id;
   pendingButton = button;
+
+  // 🔹 show immediate feedback on the gift button
+  button.textContent = "Separando…";
+  button.classList.add("gift-loading");
+
   document.getElementById("confirmModal").style.display = "flex";
 }
 
 function closeModal() {
   document.getElementById("confirmModal").style.display = "none";
+
+  // 🔹 restore button if gift was not confirmed
+  if (pendingButton) {
+    pendingButton.textContent = "Separar";
+    pendingButton.classList.remove("gift-loading");
+  }
+
   pendingGiftId = null;
   pendingButton = null;
 }
+
 
 async function confirmGift(button) {
   const originalText = button.innerHTML;
