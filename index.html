@@ -1135,30 +1135,6 @@ function applyReservedStyle(button) {
 
 
 
-  async function adminReset() {
-    const password = prompt("Admin access — enter password:");
-
-    if (password !== "michiboda2026") {
-      alert("Incorrect password");
-      return;
-    }
-
-    const confirmReset = confirm(
-      "This will reset ALL gifts.\nAre you sure?"
-    );
-
-    if (!confirmReset) return;
-
-    const giftsRef = collection(db, "gifts");
-    const snapshot = await getDocs(giftsRef);
-
-    for (const docSnap of snapshot.docs) {
-      await deleteDoc(doc(db, "gifts", docSnap.id));
-    }
-
-  alert("All gifts have been reset ✅");
-  location.reload();
-} 
     
 function copyText(elementId, el) {
   const text = document.getElementById(elementId).innerText.replace(/\s/g, "");
@@ -1307,14 +1283,30 @@ document.addEventListener("keydown", (e) => {
 
   if (e.ctrlKey && e.shiftKey && e.code === "KeyF") {
     const input = prompt("Contraseña de administrador:");
-    if (input !== ADMIN_PASSWORD) return alert("Contraseña incorrecta");
+
+    if (input !== ADMIN_PASSWORD) {
+      alert("Contraseña incorrecta");
+      return;
+    }
 
     isAdmin = !isAdmin;
 
+    alert(
+      isAdmin
+        ? "Modo administrador ACTIVADO"
+        : "Modo administrador DESACTIVADO"
+    );
+
     refreshAdminFundNotes();
     refreshAdminGiftNotes();
+
+    if (!isAdmin) {
+      document.getElementById("adminPanel").style.display = "none";
+      document.getElementById("adminGiftPanel").style.display = "none";
+    }
   }
 });
+
 
 
 
