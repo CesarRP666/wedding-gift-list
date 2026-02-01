@@ -191,6 +191,12 @@ p.subtitle:last-of-type {
   margin-left: 6px;
 }
 
+.gift-loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+    
 
 .confirm-text {
   font-size: 14px;
@@ -1200,28 +1206,47 @@ async function readFundMessages(fundId) {
   });
 }
 
-    
-function applyReservedStyle(button) {
-  button.innerHTML = 'Regalo separado <span class="check">✓</span>';
-  button.classList.add("gift-selected");
-  button.style.pointerEvents = "none";
-}
+
 
     
-  async function checkGiftStatus() {
+async function checkGiftStatus() {
   const buttons = document.querySelectorAll("[data-gift-id]");
+
+  // 🔹 immediately mark all as loading
+  buttons.forEach(button => {
+    button.classList.add("gift-loading");
+    button.textContent = "Verificando…";
+  });
 
   for (const button of buttons) {
     const id = button.dataset.giftId;
     const ref = doc(db, "gifts", id);
-    const snap = await getDoc(ref);
 
-    if (snap.exists()) {
-      applyReservedStyle(button);
+    try {
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        applyReservedStyle(button);
+      } else {
+        // available gift
+        button.textContent = "Separar";
+        button.classList.remove("gift-loading");
+      }
+
+    } catch (err) {
+      console.error("Error checking gift status:", err);
+      button.textContent = "Separar";
+      button.classList.remove("gift-loading");
     }
   }
 }
 
+function applyReservedStyle(button) {
+  button.textContent = "Comprobando disponibilidad…";
+  button.style.pointerEvents = "none";
+  button.style.background = "#aaa";
+  button.classList.remove("gift-loading");
+}
 
 
     
