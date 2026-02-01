@@ -421,6 +421,18 @@ footer {
   color: #3f3a36;
 }
 
+.admin-fund-section {
+  margin-bottom: 18px;
+}
+
+.admin-fund-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8A5A55;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e6e0dc;
+  padding-bottom: 4px;
+}
     
     
 @media (prefers-color-scheme: dark) {
@@ -661,7 +673,7 @@ html {
     <span>Fondo para Hora Loca y Bebidas 🥳</span>
     <a href="javascript:void(0)"
         data-fund-id="crazy"
-        onclick="openFundModal('crazy')">
+        onclick="openFundModal('party')">
         Contribuir
     </a>
       </div>      
@@ -885,9 +897,19 @@ import {
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  let pendingGiftId = null;
+let pendingGiftId = null;
 let pendingButton = null;
 
+
+const FUND_LABELS = {
+  honeymoon: "Fondo para nuestra Luna de miel 🌙",
+  studies: "Fondo para nuestros Estudios Futuros 📘",
+  party: "Fondo para Hora Loca y Bebidas 🎉",
+  home: "Fondo para nuestro Hogar y Proyectos 🏡"
+};
+    
+    
+    
 function openModal(id, button) {
   pendingGiftId = id;
   pendingButton = button;
@@ -1110,16 +1132,32 @@ async function refreshAdminFundNotes() {
   panel.style.display = "flex";
 
   const fundLinks = document.querySelectorAll("[data-fund-id]");
+  const seenFunds = new Set();
 
   for (const link of fundLinks) {
     const fundId = link.dataset.fundId;
+    if (seenFunds.has(fundId)) continue;
+    seenFunds.add(fundId);
+
     const ref = doc(db, "funds", fundId);
     const snap = await getDoc(ref);
 
     if (!snap.exists()) continue;
 
     const contributions = snap.data().contributions || [];
+    if (contributions.length === 0) continue;
 
+    /* ── Fund section header ── */
+    const section = document.createElement("div");
+    section.className = "admin-fund-section";
+
+    const title = document.createElement("div");
+    title.className = "admin-fund-title";
+    title.textContent = FUND_LABELS[fundId] || fundId;
+
+    section.appendChild(title);
+
+    /* ── Messages ── */
     contributions.forEach(c => {
       const msg = document.createElement("div");
       msg.className = "admin-message";
@@ -1129,8 +1167,10 @@ async function refreshAdminFundNotes() {
         <div class="text">${c.message || "—"}</div>
       `;
 
-      list.appendChild(msg);
+      section.appendChild(msg);
     });
+
+    list.appendChild(section);
   }
 }
 
