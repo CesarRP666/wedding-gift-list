@@ -433,6 +433,34 @@ footer {
   border-bottom: 1px solid #e6e0dc;
   padding-bottom: 4px;
 }
+
+
+/* Floating admin panel — gifts (LEFT) */
+#adminGiftPanel {
+  position: fixed;
+  top: 80px;
+  left: 24px;
+  width: 320px;
+  max-height: calc(100vh - 120px);
+
+  background: rgba(250, 248, 245, 0.96);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+#adminGiftMessages {
+  padding: 12px 16px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+
     
     
 @media (prefers-color-scheme: dark) {
@@ -861,6 +889,13 @@ html {
   </div>
   <div id="adminMessages"></div>
 </div>
+
+<div id="adminGiftPanel">
+  <div class="admin-panel-header">
+    Mensajes de Regalos (Admin)
+  </div>
+  <div id="adminGiftMessages"></div>
+</div>
   
   
 
@@ -908,6 +943,28 @@ const FUND_LABELS = {
   home: "Fondo para nuestro Hogar y Proyectos 🏡"
 };
     
+
+const GIFT_LABELS = {
+  airfryer: "Freidora de Aire",
+  batidora: "Licuadora de Inmersión",
+  vapac: "Vaporera de Acero",
+  knives: "Set de Cuchillos",
+  vacuum: "Aspiradora",
+  expkitt: "Exploding Kittens",
+  chess: "Ajedrez",
+  almohadas: "Almohadas",
+  sab1: "Sábanas Satín",
+  sab2: "Sábanas Algodón",
+  travelbackpack: "Mochila de Viaje",
+  almohadacuello: "Almohada de Cuello",
+  minicam: "Mini Cámara",
+  zapatera: "Zapatera",
+  talacena: "Tápers de Vidrio",
+  vale1: "Vale Experiencias 1",
+  vale2: "Vale Experiencias 2",
+  vale3: "Cena Romántica"
+};
+
     
     
 function openModal(id, button) {
@@ -1175,6 +1232,52 @@ async function refreshAdminFundNotes() {
 }
 
 
+async function refreshAdminGiftNotes() {
+  const panel = document.getElementById("adminGiftPanel");
+  const list = document.getElementById("adminGiftMessages");
+
+  list.innerHTML = "";
+
+  if (!isAdmin) {
+    panel.style.display = "none";
+    return;
+  }
+
+  panel.style.display = "flex";
+
+  const giftButtons = document.querySelectorAll("[data-gift-id]");
+
+  for (const button of giftButtons) {
+    const giftId = button.dataset.giftId;
+    const ref = doc(db, "gifts", giftId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) continue;
+
+    const data = snap.data();
+    if (!data.from && !data.message) continue;
+
+    const section = document.createElement("div");
+    section.className = "admin-fund-section";
+
+    const title = document.createElement("div");
+    title.className = "admin-fund-title";
+    title.textContent = GIFT_LABELS[giftId] || giftId;
+
+    section.appendChild(title);
+
+    const msg = document.createElement("div");
+    msg.className = "admin-message";
+
+    msg.innerHTML = `
+      <div class="from">De: ${data.from || "—"}</div>
+      <div class="text">${data.message || "—"}</div>
+    `;
+
+    section.appendChild(msg);
+    list.appendChild(section);
+  }
+}
     
     
 
@@ -1202,6 +1305,7 @@ document.addEventListener("keydown", (e) => {
 
     refreshAdminNotes();
     refreshAdminFundNotes();
+    refreshAdminGiftNotes();
   }
 });
 
