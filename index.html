@@ -368,6 +368,59 @@ footer {
 .guest-note textarea::placeholder {
   color: #aaa;
 }
+
+
+/* Floating admin message panel */
+#adminPanel {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  width: 320px;
+  max-height: calc(100vh - 120px);
+
+  background: rgba(250, 248, 245, 0.96);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+
+  display: none; /* hidden by default */
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.admin-panel-header {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #8A5A55;
+  border-bottom: 1px solid #e6e0dc;
+}
+
+#adminMessages {
+  padding: 12px 16px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Message bubble (WhatsApp-ish) */
+.admin-message {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  border-left: 3px solid #8A5A55;
+}
+
+.admin-message .from {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.admin-message .text {
+  color: #3f3a36;
+}
+
     
     
 @media (prefers-color-scheme: dark) {
@@ -790,6 +843,13 @@ html {
 </span>
 
 
+<div id="adminPanel">
+  <div class="admin-panel-header">
+    Mensajes (Admin)
+  </div>
+  <div id="adminMessages"></div>
+</div>
+  
   
 
 </body>
@@ -1037,9 +1097,17 @@ function refreshAdminNotes() {
 
 
 async function refreshAdminFundNotes() {
-  document.querySelectorAll(".fund-admin-note").forEach(n => n.remove());
+  const panel = document.getElementById("adminPanel");
+  const list = document.getElementById("adminMessages");
 
-  if (!isAdmin) return;
+  list.innerHTML = "";
+
+  if (!isAdmin) {
+    panel.style.display = "none";
+    return;
+  }
+
+  panel.style.display = "flex";
 
   const fundLinks = document.querySelectorAll("[data-fund-id]");
 
@@ -1051,24 +1119,21 @@ async function refreshAdminFundNotes() {
     if (!snap.exists()) continue;
 
     const contributions = snap.data().contributions || [];
-    if (contributions.length === 0) continue;
-
-    const box = document.createElement("div");
-    box.className = "fund-admin-note";
 
     contributions.forEach(c => {
-      const row = document.createElement("div");
-      row.style.marginBottom = "6px";
-      row.innerHTML = `
-        <strong>De:</strong> ${c.from || "—"}<br>
-        <strong>Mensaje:</strong> ${c.message || "—"}
-      `;
-      box.appendChild(row);
-    });
+      const msg = document.createElement("div");
+      msg.className = "admin-message";
 
-    link.closest(".gift").appendChild(box);
+      msg.innerHTML = `
+        <div class="from">De: ${c.from || "—"}</div>
+        <div class="text">${c.message || "—"}</div>
+      `;
+
+      list.appendChild(msg);
+    });
   }
 }
+
 
     
     
