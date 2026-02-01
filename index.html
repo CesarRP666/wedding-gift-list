@@ -460,6 +460,11 @@ footer {
   line-height: 1.4;
 }
 
+#adminResetModal label {
+  display: block;
+  margin: 12px 0;
+  font-size: 14px;
+}
 
     
     
@@ -491,6 +496,7 @@ html {
     <h1>Si deseas acompañarnos con un presente, aquí encontrarás algunas ideas.</h1>
     <p class="subtitle">
       Como ya compartimos nuestro hogar y contamos con lo esencial, hemos reunido aquí algunas formas de apoyarnos.
+      Apreciamos que dejen su mensaje al separar o contribuir con su regalo. 
     </p>
 
 
@@ -897,6 +903,28 @@ html {
   <div id="adminGiftMessages"></div>
 </div>
   
+
+<div id="adminResetModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeAdminReset()">×</span>
+
+    <h3>Opciones de reinicio</h3>
+
+    <label>
+      <input type="checkbox" id="resetGifts" checked>
+      Reiniciar regalos
+    </label>
+
+    <label>
+      <input type="checkbox" id="resetMessages">
+      Borrar mensajes
+    </label>
+
+    <button class="primary-action" onclick="confirmAdminReset()">
+      Confirmar reinicio
+    </button>
+  </div>
+</div>
   
 
 </body>
@@ -1161,14 +1189,7 @@ function refreshAdminNotes() {
     if (snap.exists()) {
       const data = snap.data();
       if (data.from || data.message) {
-        const note = document.createElement("div");
-        note.className = "admin-note";
-        note.innerHTML = `
-          <strong>De:</strong> ${data.from || "—"}<br>
-          <strong>Mensaje:</strong> ${data.message || "—"}
-        `;
-        button.closest(".gift").appendChild(note);
-      }
+        }
     }
   });
 }
@@ -1310,6 +1331,56 @@ document.addEventListener("keydown", (e) => {
 });
 
 
+function adminReset() {
+  document.getElementById("adminResetModal").style.display = "flex";
+}
+
+function closeAdminReset() {
+  document.getElementById("adminResetModal").style.display = "none";
+}
+
+    
+async function confirmAdminReset() {
+  const resetGifts = document.getElementById("resetGifts").checked;
+  const resetMessages = document.getElementById("resetMessages").checked;
+
+  // 1️⃣ Reset gifts
+  if (resetGifts) {
+    const giftSnap = await getDocs(collection(db, "gifts"));
+    for (const docSnap of giftSnap.docs) {
+      await deleteDoc(doc(db, "gifts", docSnap.id));
+    }
+  }
+
+  // 2️⃣ Delete messages (fund + gift messages)
+  if (resetMessages) {
+    // Gifts: remove from/message fields
+    const giftSnap = await getDocs(collection(db, "gifts"));
+    for (const docSnap of giftSnap.docs) {
+      await setDoc(
+        doc(db, "gifts", docSnap.id),
+        { claimed: true },
+        { merge: true }
+      );
+    }
+
+    // Funds: clear contributions array
+    const fundSnap = await getDocs(collection(db, "funds"));
+    for (const docSnap of fundSnap.docs) {
+      await setDoc(
+        doc(db, "funds", docSnap.id),
+        { contributions: [] },
+        { merge: true }
+      );
+    }
+  }
+
+  closeAdminReset();
+
+  // Refresh admin panels
+  refreshAdminGiftNotes();
+  refreshAdminFundNotes();
+}
     
     
 
