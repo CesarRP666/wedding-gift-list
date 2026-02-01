@@ -494,8 +494,7 @@ footer {
 /* Loading state for buttons */
 .button-loading {
   pointer-events: none;
-  opacity: 0.6;
-  position: relative;
+  opacity: 0.8;
 }
 
 .button-loading::after {
@@ -508,7 +507,7 @@ footer {
 
   font-size: 13px;
   color: #fff;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.45);
   border-radius: inherit;
 }
 
@@ -823,14 +822,14 @@ html {
   <input
     type="text"
     id="fromName"
-    placeholder="De (opcional)"
+    placeholder="De "
   >
 
   <textarea
     id="guestMessage"
     rows="3"
     maxlength="1500"
-    placeholder="Mensaje (opcional, máximo 1500 caracteres)"
+    placeholder="Mensaje (máximo 1500 caracteres)"
   ></textarea>
 </div>
 
@@ -910,14 +909,14 @@ html {
   <input
     type="text"
     id="fundFromName"
-    placeholder="De (opcional)"
+    placeholder="De"
   >
 
   <textarea
     id="fundGuestMessage"
     rows="3"
     maxlength="1500"
-    placeholder="Mensaje (opcional, máximo 1500 caracteres)"
+    placeholder="Mensaje (máximo 1500 caracteres)"
   ></textarea>
 </div>
 
@@ -1057,30 +1056,50 @@ function closeModal() {
 }
 
 async function confirmGift(button) {
+  const originalText = button.innerHTML;
+
+  button.innerHTML = "Procesando…";
   button.classList.add("button-loading");
-  const ref = doc(db, "gifts", pendingGiftId);
-  const snap = await getDoc(ref);
 
-  if (snap.exists()) {
-    alert("Este regalo ya ha sido seleccionado 💍");
+  try {
+    const from = document.getElementById("fromName")?.value || "";
+    const message = document.getElementById("guestMessage")?.value || "";
+
+    if (!pendingGiftId) {
+      alert("Error interno: regalo no identificado.");
+      return;
+    }
+
+    const ref = doc(db, "gifts", pendingGiftId);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      alert("Este regalo ya fue separado 💍");
+      return;
+    }
+
+    await setDoc(ref, {
+      claimed: true,
+      from,
+      message,
+      timestamp: Date.now()
+    });
+
+    document.getElementById("fromName").value = "";
+    document.getElementById("guestMessage").value = "";
+
     closeModal();
-    return;
-  }
-const messageEl = document.getElementById("guestMessage");
-const message = messageEl?.value || "";
 
-if (message.length > 1500) {
-  alert("El mensaje no puede tener más de 1500 caracteres.");
-  return;
-  button.classList.remove("button-loading");
+  } catch (err) {
+    console.error("Error confirming gift:", err);
+    alert("Ocurrió un error. Inténtalo nuevamente.");
+
+  } finally {
+    button.classList.remove("button-loading");
+    button.innerHTML = originalText;
+  }
 }
 
-await setDoc(ref, {
-  claimed: true,
-  from: document.getElementById("fromName")?.value || "",
-  message: document.getElementById("guestMessage")?.value || "",
-  timestamp: Date.now()
-});
 
 
   
@@ -1107,7 +1126,11 @@ function closeFundModal() {
     
     
 async function confirmFund(button) {
-  // start loading immediately
+  // 🔹 store original button text
+  const originalText = button.innerHTML;
+
+  // 🔹 show clear loading state
+  button.innerHTML = "Procesando…";
   button.classList.add("button-loading");
 
   try {
@@ -1116,7 +1139,7 @@ async function confirmFund(button) {
 
     if (message.length > 1500) {
       alert("El mensaje no puede tener más de 1500 caracteres.");
-      return; // finally WILL still run
+      return;
     }
 
     if (!pendingFundId) {
@@ -1142,21 +1165,24 @@ async function confirmFund(button) {
       })
     });
 
-    // clear inputs
+    // 🔹 clear inputs
     document.getElementById("fundFromName").value = "";
     document.getElementById("fundGuestMessage").value = "";
 
-    // close modal on success
+    // 🔹 close modal on success
     closeFundModal();
 
   } catch (err) {
     console.error("Error saving fund contribution:", err);
     alert("Ocurrió un error. Inténtalo nuevamente.");
+
   } finally {
-    // ALWAYS remove loading state
+    // 🔹 ALWAYS restore button
     button.classList.remove("button-loading");
+    button.innerHTML = originalText;
   }
 }
+
 
 
 async function readFundMessages(fundId) {
@@ -1396,49 +1422,64 @@ function closeAdminReset() {
 }
 
     
-async function confirmAdminReset() {
+async function confirmAdminReset(button) {
+  const originalText = button.innerHTML;
+
+  button.innerHTML = "Procesando…";
   button.classList.add("button-loading");
-  const resetGifts = document.getElementById("resetGifts").checked;
-  const resetMessages = document.getElementById("resetMessages").checked;
 
-  // 1️⃣ Reset gifts
-  if (resetGifts) {
-    const giftSnap = await getDocs(collection(db, "gifts"));
-    for (const docSnap of giftSnap.docs) {
-      await deleteDoc(doc(db, "gifts", docSnap.id));
+  try {
+    const resetGifts = document.getElementById("resetGifts").checked;
+    const resetMessages = document.getElementById("resetMessages").checked;
+
+    if (!resetGifts && !resetMessages) {
+      alert("Selecciona al menos una opción.");
+      return;
     }
+
+    // Reset gifts
+    if (resetGifts) {
+      const giftSnap = await getDocs(collection(db, "gifts"));
+      for (const docSnap of giftSnap.docs) {
+        await deleteDoc(doc(db, "gifts", docSnap.id));
+      }
+    }
+
+    // Reset messages
+    if (resetMessages) {
+      const giftSnap = await getDocs(collection(db, "gifts"));
+      for (const docSnap of giftSnap.docs) {
+        await setDoc(
+          doc(db, "gifts", docSnap.id),
+          { from: "", message: "" },
+          { merge: true }
+        );
+      }
+
+      const fundSnap = await getDocs(collection(db, "funds"));
+      for (const docSnap of fundSnap.docs) {
+        await setDoc(
+          doc(db, "funds", docSnap.id),
+          { contributions: [] },
+          { merge: true }
+        );
+      }
+    }
+
+    closeAdminReset();
+    refreshAdminGiftNotes();
+    refreshAdminFundNotes();
+
+  } catch (err) {
+    console.error("Error resetting data:", err);
+    alert("Error al reiniciar. Inténtalo nuevamente.");
+
+  } finally {
+    button.classList.remove("button-loading");
+    button.innerHTML = originalText;
   }
-
-  // 2️⃣ Delete messages (fund + gift messages)
-  if (resetMessages) {
-    // Gifts: remove from/message fields
-    const giftSnap = await getDocs(collection(db, "gifts"));
-    for (const docSnap of giftSnap.docs) {
-      await setDoc(
-        doc(db, "gifts", docSnap.id),
-        { claimed: true },
-        { merge: true }
-      );
-    }
-
-    // Funds: clear contributions array
-    const fundSnap = await getDocs(collection(db, "funds"));
-    for (const docSnap of fundSnap.docs) {
-      await setDoc(
-        doc(db, "funds", docSnap.id),
-        { contributions: [] },
-        { merge: true }
-      );
-    }
-  }
-
-  closeAdminReset();
-
-  // Refresh admin panels
-  refreshAdminGiftNotes();
-  refreshAdminFundNotes();
-  button.classList.remove("button-loading");
 }
+
     
     
 
