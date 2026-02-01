@@ -1125,63 +1125,55 @@ function closeFundModal() {
 
     
     
-async function confirmFund(button) {
-  // 🔹 store original button text
+async function confirmGift(button) {
   const originalText = button.innerHTML;
 
-  // 🔹 show clear loading state
   button.innerHTML = "Procesando…";
   button.classList.add("button-loading");
 
   try {
-    const from = document.getElementById("fundFromName")?.value || "";
-    const message = document.getElementById("fundGuestMessage")?.value || "";
+    const from = document.getElementById("fromName")?.value || "";
+    const message = document.getElementById("guestMessage")?.value || "";
 
-    if (message.length > 1500) {
-      alert("El mensaje no puede tener más de 1500 caracteres.");
+    if (!pendingGiftId) {
+      alert("Error interno: regalo no identificado.");
       return;
     }
 
-    if (!pendingFundId) {
-      alert("Error interno: fondo no identificado.");
-      return;
-    }
-
-    const ref = doc(db, "funds", pendingFundId);
+    const ref = doc(db, "gifts", pendingGiftId);
     const snap = await getDoc(ref);
 
-    if (!snap.exists()) {
-      // create fund document the first time
-      await setDoc(ref, {
-        contributions: []
-      });
+    if (snap.exists()) {
+      alert("Este regalo ya fue separado 💍");
+      return;
     }
 
-    await updateDoc(ref, {
-      contributions: arrayUnion({
-        from,
-        message,
-        timestamp: Date.now()
-      })
+    await setDoc(ref, {
+      claimed: true,
+      from,
+      message,
+      timestamp: Date.now()
     });
 
-    // 🔹 clear inputs
-    document.getElementById("fundFromName").value = "";
-    document.getElementById("fundGuestMessage").value = "";
+    // ✅ APPLY VISUAL STATE HERE
+    applyReservedStyle(pendingButton);
 
-    // 🔹 close modal on success
-    closeFundModal();
+    // ✅ CLEAR INPUTS
+    document.getElementById("fromName").value = "";
+    document.getElementById("guestMessage").value = "";
+
+    closeModal();
 
   } catch (err) {
-    console.error("Error saving fund contribution:", err);
+    console.error("Error confirming gift:", err);
     alert("Ocurrió un error. Inténtalo nuevamente.");
 
   } finally {
-    // 🔹 ALWAYS restore button
     button.classList.remove("button-loading");
     button.innerHTML = originalText;
   }
 }
+
 
 
 
