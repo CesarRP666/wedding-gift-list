@@ -589,6 +589,7 @@ html {
       <div class="gift">
         <span>Fondo para nuestra Luna de miel 🌙</span>
         <a href="javascript:void(0)"
+           data-fund-id="honeymoon"
            onclick="openFundModal('honeymoon')">
            Contribuir
         </a>
@@ -597,6 +598,7 @@ html {
 <div class="gift">
     <span>Fondo para nuestros Estudios Futuros 📖</span>
     <a href="javascript:void(0)"
+        data-fund-id="studies"
         onclick="openFundModal('studies')">
         Contribuir
     </a>
@@ -605,6 +607,7 @@ html {
 <div class="gift">
     <span>Fondo para Hora Loca y Bebidas 🥳</span>
     <a href="javascript:void(0)"
+        data-fund-id="crazy"
         onclick="openFundModal('crazy')">
         Contribuir
     </a>
@@ -613,6 +616,7 @@ html {
 <div class="gift">
     <span>Fondo para nuestro Hogar y Proyectos 🏠 </span>
     <a href="javascript:void(0)"
+        data-fund-id="home"
         onclick="openFundModal('home')">
         Contribuir
     </a>      
@@ -1030,6 +1034,43 @@ function refreshAdminNotes() {
   });
 }
 
+
+
+async function refreshAdminFundNotes() {
+  document.querySelectorAll(".fund-admin-note").forEach(n => n.remove());
+
+  if (!isAdmin) return;
+
+  const fundLinks = document.querySelectorAll("[data-fund-id]");
+
+  for (const link of fundLinks) {
+    const fundId = link.dataset.fundId;
+    const ref = doc(db, "funds", fundId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) continue;
+
+    const contributions = snap.data().contributions || [];
+    if (contributions.length === 0) continue;
+
+    const box = document.createElement("div");
+    box.className = "fund-admin-note";
+
+    contributions.forEach(c => {
+      const row = document.createElement("div");
+      row.style.marginBottom = "6px";
+      row.innerHTML = `
+        <strong>De:</strong> ${c.from || "—"}<br>
+        <strong>Mensaje:</strong> ${c.message || "—"}
+      `;
+      box.appendChild(row);
+    });
+
+    link.closest(".gift").appendChild(box);
+  }
+}
+
+    
     
 
 document.addEventListener("keydown", (e) => {
@@ -1055,6 +1096,7 @@ document.addEventListener("keydown", (e) => {
     );
 
     refreshAdminNotes();
+    refreshAdminFundNotes();
   }
 });
 
