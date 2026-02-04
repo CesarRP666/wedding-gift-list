@@ -529,6 +529,21 @@ footer {
   border-radius: inherit;
 }
 
+.account-entry {
+  margin-top: 12px;
+}
+
+.account-number {
+  font-weight: 600;
+}
+
+.account-name {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+    
+
 
     
     
@@ -919,12 +934,24 @@ html {
   <span class="copy-action" onclick="copyText('cci', this)">Copiar</span>
 </div>
 
-<div class="copy-row">
-  <strong>Yape</strong><br>
-  <span id="yape" class="copy-value">985 368 765</span><br>
-  <span style="font-size:14px; color:#666;">Cesar Requejo</span><br>
-  <span class="copy-action" onclick="copyText('yape', this)">Copiar número</span>
+<div class="account-block">
+  <strong>Yape</strong>
+
+  <div class="account-entry">
+    <div class="account-number">985 368 765</div>
+    <div class="account-name">Cesar Requejo</div>
+    <a onclick="copyText('985368765')">Copiar número</a>
+  </div>
+
+  <div class="account-entry">
+    <div class="account-number">949 452 496</div>
+    <div class="account-name">Alejandra Ordoñez</div>
+    <a onclick="copyText('949452496')">Copiar número</a>
+  </div>
 </div>
+
+
+  
 
 <div class="guest-note">
   <input
