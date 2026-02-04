@@ -543,6 +543,12 @@ footer {
   margin-bottom: 4px;
 }
     
+.copy-action {
+  margin-left: 12px;
+  font-size: 13px;
+  color: var(--accent);
+  cursor: pointer;
+}
 
 
     
@@ -937,18 +943,18 @@ html {
 <div class="account-block">
   <strong>Yape</strong>
 
-  <div class="account-entry">
-    <div class="account-number">985 368 765</div>
-    <div class="account-name">Cesar Requejo</div>
-    <a onclick="copyText('985368765')">Copiar número</a>
-  </div>
-
-  <div class="account-entry">
-    <div class="account-number">949 452 496</div>
-    <div class="account-name">Alejandra Ordoñez</div>
-    <a onclick="copyText('949452496')">Copiar número</a>
-  </div>
+<div class="account-entry">
+  <span id="yape-cesar" class="copy-value account-number">985 368 765</span>
+  <div class="account-name">Cesar Requejo</div>
+  <span class="copy-action" onclick="copyText('yape-cesar', this)">Copiar</span>
 </div>
+
+<div class="account-entry">
+  <span id="yape-ale" class="copy-value account-number">949 452 496</span>
+  <div class="account-name">Alejandra Ordoñez</div>
+  <span class="copy-action" onclick="copyText('yape-ale', this)">Copiar</span>
+</div>
+
 
 
   
