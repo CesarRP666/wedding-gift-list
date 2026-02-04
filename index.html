@@ -38,25 +38,27 @@ html, body {
   color: var(--sec-text);
 }
 
-.copy-value {
+.account-entry .copy-value {
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.3px;
   color: var(--sec-text);
 }
-}
+
 
 .copy-action {
   margin-left: 12px;
   font-size: 13px;
-  color: #888;
+  font-weight: 500;
+  color: var(--accent);
   cursor: pointer;
   border-bottom: 1px solid transparent;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .copy-action:hover {
-  color: #000;
-  border-bottom: 1px solid #000;
+  color: var(--accent-hover);
+  border-bottom-color: var(--accent-hover);
 }
 
 .copy-action.copied {
@@ -64,6 +66,7 @@ html, body {
   border-bottom: none;
   cursor: default;
 }
+
 
 /* Fund modal container polish */
 #fundModal > div {
@@ -207,17 +210,6 @@ p.subtitle:last-of-type {
 }
 
    
-
-/* Copy actions (fund modal) */
-.copy-action {
-  color: var(--accent);
-}
-
-.copy-action:hover {
-  color: var(--accent-hover);
-  border-bottom: 1px solid var(--accent-hover);
-}
-
 
 /* Optional typography polish */
  p {
